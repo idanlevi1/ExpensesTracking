@@ -21,6 +21,7 @@ const Profile: React.FC<ProfileProp> = ({ navigation }) => {
         dispatch(setFullName(null))
         dispatch(setExpensesList([]))
         navigation.navigate(SCREEN.WELCOME)
+        navigation.goBack()
     }
 
     return (

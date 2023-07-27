@@ -3,12 +3,14 @@ import { View, TextInput, Text, TouchableOpacity, StyleSheet, Button } from 'rea
 import { LongButton } from '..';
 import { CloseBtn } from '../../assets/svg';
 import { COLORS, TEXT_STYLE } from '../../utils/StyleGuide';
+import { generateRandomId } from '../../utils/Tools';
 
 interface ExpenseFormProps {
     onCloseBottomSheet: Function;
     sheetTitle: string;
     buttonText: string;
     isCleanOption: boolean;
+    onSubmit: Function;
 }
 
 const ExpenseForm: React.FC<ExpenseFormProps> = ({
@@ -16,6 +18,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
     sheetTitle,
     buttonText,
     isCleanOption = false,
+    onSubmit,
 }) => {
     const [title, setTitle] = useState('');
     const [amount, setAmount] = useState('');
@@ -25,42 +28,58 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
     const [isValidDate, setIsValidDate] = useState(true);
 
     const handleCreateExpense = () => {
-        if (isValidTitle && isValidAmount && isValidDate) {
+        if (title.length && amount.length && date.length && isValidTitle && isValidAmount && isValidDate) {
             const newExpense = {
+                id: generateRandomId(),
                 title,
                 amount: parseFloat(amount),
                 date,
             };
-            //TODO: add ti the list
+            onSubmit(newExpense)
             onCloseBottomSheet();
             resetForm()
-
+        } else {
+            validateTitle(title)
+            validateAmount(amount)
+            validateDate(date)
         }
     };
+
+    const validateTitle = (title) => {
+        const titleIsValid = title.trim() !== '';
+        setIsValidTitle(titleIsValid);
+    }
+
+    const validateAmount = (amount) => {
+        const amountIsValid = !isNaN(parseFloat(amount)) && parseFloat(amount) > 0;
+        setIsValidAmount(amountIsValid);
+    }
+
+    const validateDate = (date) => {
+        const dateRegex = /^(\d{2})\.(\d{2})\.(\d{4})$/;
+        const dateIsValid = dateRegex.test(date);
+        setIsValidDate(dateIsValid);
+    }
+
+    const onChangeTitle = (title) => {
+        validateTitle(title)
+        setTitle(title)
+    }
+
+    const onChangeAmount = (amount) => {
+        validateAmount(amount)
+        setAmount(amount)
+    }
+
+    const onChangeDate = (date) => {
+        validateDate(date)
+        setDate(date)
+    }
 
     const resetForm = () => {
         setTitle('');
         setAmount('');
         setDate('');
-    }
-
-    const onChangeTitle = (title) => {
-        const titleIsValid = title.trim() !== '';
-        setIsValidTitle(titleIsValid);
-        setTitle(title)
-    }
-
-    const onChangeAmount = (amount) => {
-        const amountIsValid = !isNaN(parseFloat(amount)) && parseFloat(amount) > 0;
-        setIsValidAmount(amountIsValid);
-        setAmount(amount)
-    }
-
-    const onChangeDate = (date) => {
-        const dateRegex = /^(\d{2})\.(\d{2})\.(\d{4})$/;
-        const dateIsValid = dateRegex.test(date);
-        setIsValidDate(dateIsValid);
-        setDate(date)
     }
 
     return (

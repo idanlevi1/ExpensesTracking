@@ -1,23 +1,28 @@
 import React from "react";
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { Home, Profile } from "../screens";
-import { TAB } from "../utils/Constants";
+import { SCREEN, TAB } from "../utils/Constants";
 import { COLORS, TEXT_STYLE } from "../utils/StyleGuide";
 import { PlusButton } from "../assets/svg";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { BottomSheetComponent, ExpenseForm } from "../components";
+import { useDispatch } from 'react-redux'
+import { addExpense, Expense } from "../redux/ExpensesStore/ExpensesStoreSlice";
 
 const screenWidth = Dimensions.get('window').width;
 
 export type HomeBottomTabsParamList = {
     [TAB.HOME]: undefined;
     [TAB.PROFILE]: undefined;
+    [SCREEN.WELCOME]: undefined;
 };
 
 const Tab = createBottomTabNavigator<HomeBottomTabsParamList>();
 
 const HomeBottomTabs = () => {
+
+    const dispatch = useDispatch()
 
     const bottomSheetRef = React.useRef<BottomSheet>(null);
     const snapPoints = React.useMemo(() => ['1%', '93%'], []);
@@ -31,7 +36,6 @@ const HomeBottomTabs = () => {
         tabBarInactiveTintColor: COLORS.tab_inactive_text,
         tabBarActiveTintColor: COLORS.button_circle_background,
     }
-    console.log('__red')
 
     return (
         <React.Fragment>
@@ -58,6 +62,7 @@ const HomeBottomTabs = () => {
                 snapPoints={snapPoints}
                 onClose={handleCloseBottomSheet} >
                 <ExpenseForm
+                    onSubmit={(expense: Expense) => dispatch(addExpense(expense))}
                     sheetTitle={'Create Expense'}
                     buttonText={'Create'}
                     onCloseBottomSheet={handleCloseBottomSheet} />
