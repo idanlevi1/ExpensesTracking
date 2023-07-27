@@ -2,5 +2,9 @@
 export enum SCREEN {
     WELCOME = 'Welcome',
     HOME = 'Home',
-    PROFILE = 'Profile',
+}
+
+export enum TAB {
+    HOME = 'HomeTab',
+    PROFILE = 'ProfileTab',
 }

@@ -10,6 +10,8 @@ enum COLORS {
     button_circle_background = '#455EFF',
     filter_button_background = '#D9D9D9',
     input_text_placeholder = '#AAA9C0',
+    tab_inactive_text = '#696969',
+    tabs_border = 'rgba(0, 0, 0, 0.08)'
 };
 
 enum FONT {
