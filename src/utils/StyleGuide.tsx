@@ -19,6 +19,12 @@ enum FONT {
   }
 
 const TEXT_STYLE = {
+  regularMediumText: {
+    fontFamily: FONT.Helvetica,
+    fontSize: 18,
+    lineHeight: 20,
+    fontWeight: "400",
+  },
     regularSmallText: {
       fontFamily: FONT.Helvetica,
       fontSize: 16,
