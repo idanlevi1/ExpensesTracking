@@ -4,7 +4,7 @@ import { Home, Profile, Welcome } from "../screens";
 import { SCREEN, TAB } from "../utils/Constants";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { COLORS, TEXT_STYLE } from "../utils/StyleGuide";
-// import { FABbutton } from "../assets/svg";
+import { PlusButton } from "../assets/svg";
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -44,9 +44,9 @@ const HomeBottomTabs = () => {
                         ...tabOptions
                     })} />
             </Tab.Navigator>
-            {/* <TouchableOpacity onPress={() => { Alert.alert('Pressed!') }}>
-                <FABbutton style={{ position: 'absolute', bottom: (87 / 2), left: screenWidth / 2 - (56 / 2) }} />
-            </TouchableOpacity> */}
+            <TouchableOpacity onPress={() => { Alert.alert('Pressed!') }}>
+                <PlusButton style={{ position: 'absolute', bottom: (87 / 2), left: screenWidth / 2 - (56 / 2) }} />
+            </TouchableOpacity>
         </>
     );
 };

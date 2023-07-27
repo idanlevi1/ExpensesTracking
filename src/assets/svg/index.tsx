@@ -1,5 +1,5 @@
-// import FABbutton from './FABbutton.svg'
+import PlusButton from './PlusButton.svg'
 
-// export {
-//     FABbutton,
-// }
+export {
+    PlusButton,
+}
