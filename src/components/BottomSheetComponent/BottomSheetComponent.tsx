@@ -3,11 +3,12 @@ import { Text, TouchableOpacityProps, StyleSheet, View } from 'react-native';
 import { COLORS, TEXT_STYLE } from '../../utils/StyleGuide';
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 
-interface BottomSheetComponentProps extends TouchableOpacityProps {
+interface BottomSheetComponentProps {
     bottomSheetRef: BottomSheet;
     index: number;
     snapPoints: Array<string | number>;
     onClose: Function;
+    children: React.ReactNode;
 }
 
 const BottomSheetComponent: React.FC<BottomSheetComponentProps> = ({
@@ -15,6 +16,7 @@ const BottomSheetComponent: React.FC<BottomSheetComponentProps> = ({
     index = -1,
     snapPoints,
     onClose,
+    children,
 }) => {
 
     const renderBackdrop = React.useCallback(
@@ -32,9 +34,7 @@ const BottomSheetComponent: React.FC<BottomSheetComponentProps> = ({
             handleIndicatorStyle={styles.indicator}
             backgroundStyle={styles.background}
         >
-            <View style={styles.contentContainer}>
-                <Text onPress={onClose}>Awesome 🎉</Text>
-            </View>
+            {children}
         </BottomSheet>
     );
 };

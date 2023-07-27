@@ -1,12 +1,12 @@
 import React from "react";
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { Home, Profile } from "../screens";
 import { TAB } from "../utils/Constants";
 import { COLORS, TEXT_STYLE } from "../utils/StyleGuide";
 import { PlusButton } from "../assets/svg";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import BottomSheet from '@gorhom/bottom-sheet';
-import { BottomSheetComponent } from "../components";
+import { BottomSheetComponent, ExpenseForm } from "../components";
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -19,21 +19,10 @@ const Tab = createBottomTabNavigator<HomeBottomTabsParamList>();
 
 const HomeBottomTabs = () => {
 
-    // ref
     const bottomSheetRef = React.useRef<BottomSheet>(null);
-
-    // variables
-    const snapPoints = React.useMemo(() => ['1%', '50%'], []);
-
-    // callbacks
-    const handleSheetChanges = React.useCallback((index: number) => {
-        console.log('handleSheetChanges', index);
-    }, []);
-
+    const snapPoints = React.useMemo(() => ['1%', '93%'], []);
     const handleOpenBottomSheet = () => bottomSheetRef.current?.expand()
-
     const handleCloseBottomSheet = () => bottomSheetRef.current?.close()
-
 
     const tabOptions = {
         tabBarIcon: () => null,
@@ -45,7 +34,7 @@ const HomeBottomTabs = () => {
     console.log('__red')
 
     return (
-        <>
+        <React.Fragment>
             <Tab.Navigator screenOptions={{ headerShown: false, tabBarIcon: () => null }} >
                 <Tab.Screen
                     name={TAB.HOME}
@@ -67,8 +56,13 @@ const HomeBottomTabs = () => {
             <BottomSheetComponent
                 bottomSheetRef={bottomSheetRef}
                 snapPoints={snapPoints}
-                onClose={handleCloseBottomSheet} />
-        </>
+                onClose={handleCloseBottomSheet} >
+                <ExpenseForm
+                    sheetTitle={'Create Expense'}
+                    buttonText={'Create'}
+                    onCloseBottomSheet={handleCloseBottomSheet} />
+            </BottomSheetComponent>
+        </React.Fragment>
     );
 };
 
