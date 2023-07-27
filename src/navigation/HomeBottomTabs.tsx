@@ -1,10 +1,10 @@
 import React from "react";
-import { Alert, Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Home, Profile, Welcome } from "../screens";
-import { SCREEN, TAB } from "../utils/Constants";
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Alert, Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
+import { Home, Profile } from "../screens";
+import { TAB } from "../utils/Constants";
 import { COLORS, TEXT_STYLE } from "../utils/StyleGuide";
 import { PlusButton } from "../assets/svg";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -27,7 +27,7 @@ const HomeBottomTabs = () => {
 
     return (
         <>
-            <Tab.Navigator screenOptions={{ headerShown: false }} >
+            <Tab.Navigator screenOptions={{ headerShown: false, tabBarIcon: () => null }} >
                 <Tab.Screen
                     name={TAB.HOME}
                     component={Home}
@@ -61,7 +61,9 @@ const styles = StyleSheet.create({
     },
     tabBarLabel: {
         ...TEXT_STYLE.regularSmallText,
-        fontSize: 13
+        fontSize: 13,
+        position: 'absolute',
+        bottom: (87 / 2) - 13
     },
 });
 
