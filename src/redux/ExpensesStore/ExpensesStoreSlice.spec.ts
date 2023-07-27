@@ -12,7 +12,7 @@ describe('expensesStore reducer', () => {
     });
   });
 
-  it('should handle fullName', () => {
+  it('should handle setExpensesList empty list', () => {
     const actual = expensesStore(initialState, setExpensesList([]));
     expect(actual.expensesList).toEqual([]);
   });

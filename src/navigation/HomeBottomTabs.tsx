@@ -1,10 +1,12 @@
 import React from "react";
-import { Alert, Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import { Home, Profile } from "../screens";
 import { TAB } from "../utils/Constants";
 import { COLORS, TEXT_STYLE } from "../utils/StyleGuide";
 import { PlusButton } from "../assets/svg";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import BottomSheet from '@gorhom/bottom-sheet';
+import { BottomSheetComponent } from "../components";
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -17,6 +19,22 @@ const Tab = createBottomTabNavigator<HomeBottomTabsParamList>();
 
 const HomeBottomTabs = () => {
 
+    // ref
+    const bottomSheetRef = React.useRef<BottomSheet>(null);
+
+    // variables
+    const snapPoints = React.useMemo(() => ['1%', '50%'], []);
+
+    // callbacks
+    const handleSheetChanges = React.useCallback((index: number) => {
+        console.log('handleSheetChanges', index);
+    }, []);
+
+    const handleOpenBottomSheet = () => bottomSheetRef.current?.expand()
+
+    const handleCloseBottomSheet = () => bottomSheetRef.current?.close()
+
+
     const tabOptions = {
         tabBarIcon: () => null,
         tabBarStyle: styles.tabBar,
@@ -24,6 +42,7 @@ const HomeBottomTabs = () => {
         tabBarInactiveTintColor: COLORS.tab_inactive_text,
         tabBarActiveTintColor: COLORS.button_circle_background,
     }
+    console.log('__red')
 
     return (
         <>
@@ -44,9 +63,11 @@ const HomeBottomTabs = () => {
                         ...tabOptions
                     })} />
             </Tab.Navigator>
-            <TouchableOpacity onPress={() => { Alert.alert('Pressed!') }}>
-                <PlusButton style={{ position: 'absolute', bottom: (87 / 2), left: screenWidth / 2 - (56 / 2) }} />
-            </TouchableOpacity>
+            <PlusButton onPress={handleOpenBottomSheet} style={{ position: 'absolute', bottom: (87 / 2), left: screenWidth / 2 - (56 / 2) }} />
+            <BottomSheetComponent
+                bottomSheetRef={bottomSheetRef}
+                snapPoints={snapPoints}
+                onClose={handleCloseBottomSheet} />
         </>
     );
 };
