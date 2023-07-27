@@ -5,20 +5,26 @@ import { MainStackParamList } from '../../navigation/MainStackNavigator';
 import { SCREEN } from '../../utils/Constants';
 import { COLORS, TEXT_STYLE } from '../../utils/StyleGuide';
 import { LongButton } from '../../components';
+import { useDispatch } from 'react-redux'
+import { setFullName } from '../../redux/UserStore/UserStoreSlice';
 
 type WelcomeProp = {
     navigation: NativeStackNavigationProp<MainStackParamList, SCREEN.WELCOME>;
 };
 
 const Welcome: React.FC<WelcomeProp> = ({ navigation }) => {
-
+    const dispatch = useDispatch()
     const [name, setName] = useState('');
 
     const handleButtonPress = () => {
-        console.log('🚀 Button Pressed! Entered Name:', name);
-        //TODO: save full name
-        navigation.navigate(SCREEN.HOME)
+        if (name.trim() !== '') {
+            dispatch(setFullName(name))
+            navigation.navigate(SCREEN.HOME)
+            //reset field
+            setName('')
+        }
     };
+    
     return (
         <View style={styles.container}>
 

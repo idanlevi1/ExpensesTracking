@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { TAB } from '../../utils/Constants';
+import { SCREEN, TAB } from '../../utils/Constants';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { HomeBottomTabsParamList } from '../../navigation/HomeBottomTabs';
 import { COLORS, TEXT_STYLE } from '../../utils/StyleGuide';
@@ -20,6 +20,7 @@ const Profile: React.FC<ProfileProp> = ({ navigation }) => {
     const handleSignOut = () => {
         dispatch(setFullName(null))
         dispatch(setExpensesList([]))
+        navigation.navigate(SCREEN.WELCOME)
     }
 
     return (
