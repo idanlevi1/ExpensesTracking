@@ -3,7 +3,7 @@ import { View, TextInput, Text, TouchableOpacity, StyleSheet, Button } from 'rea
 import { useDispatch, useSelector } from 'react-redux';
 import { LongButton } from '..';
 import { CloseBtn } from '../../assets/svg';
-import { setChosenExpense, setExpensesFilters } from '../../redux/ExpensesStore/ExpensesStoreSlice';
+import { deleteExpense, setChosenExpense, setExpensesFilters } from '../../redux/ExpensesStore/ExpensesStoreSlice';
 import { RootState } from '../../redux/store';
 import { BOTTOM_SHEET_MODE } from '../../utils/Constants';
 import { COLORS, TEXT_STYLE } from '../../utils/StyleGuide';
@@ -81,7 +81,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
     }
 
     const validateAmount = (amount: string) => {
-        const amountIsValid = !isNaN(parseFloat(amount)) && parseFloat(amount) > 0;
+        const amountIsValid = /^[0-9]+(?:\.[0-9]+)?$/.test(amount) && parseFloat(amount) > 0;
         setIsValidAmount(amountIsValid);
     }
 
@@ -115,6 +115,13 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
         setIsValidDate(true)
     }
 
+    const handleDelete = () => {
+        if (chosenExpense) {
+            dispatch(deleteExpense(chosenExpense.id))
+            onCloseBottomSheet();
+        }
+    }
+
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.closeButton} onPress={onCloseBottomSheet}>
@@ -123,6 +130,10 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
             {isCleanOption && (
                 <View style={styles.clearButton}>
                     <Button title="clear" onPress={resetForm} />
+                </View>)}
+            {mode == BOTTOM_SHEET_MODE.EDIT && (
+                <View style={styles.clearButton}>
+                    <Button title="Delete" onPress={handleDelete} color={COLORS.error} />
                 </View>)}
             {/* </View> */}
             <Text style={styles.title}>{sheetTitle}</Text>
