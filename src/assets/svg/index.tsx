@@ -1,9 +1,9 @@
 import PlusButton from './plusButton.svg'
 import CloseBtn from './closeBtn.svg'
-import Filters from './filters.svg'
+import FiltersIcon from './filtersIcon.svg'
 
 export {
     PlusButton,
     CloseBtn,
-    Filters,
+    FiltersIcon,
 }

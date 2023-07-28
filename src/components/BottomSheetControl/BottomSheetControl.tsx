@@ -7,9 +7,7 @@ import { addExpense, editExpense, Expense } from '../../redux/ExpensesStore/Expe
 import { RootState } from '../../redux/store';
 import { BOTTOM_SHEET_MODE } from '../../utils/Constants';
 
-interface BottomSheetControlProps {
-
-}
+interface BottomSheetControlProps { }
 
 const BottomSheetControl: React.FC<BottomSheetControlProps> = () => {
     const dispatch = useDispatch()
@@ -25,9 +23,13 @@ const BottomSheetControl: React.FC<BottomSheetControlProps> = () => {
     const handleOpenBottomSheetEdit = () => bottomSheetRefEdit.current?.expand()
     const handleCloseBottomSheetEdit = () => bottomSheetRefEdit.current?.close()
 
+    const bottomSheetRefFilters = React.useRef<BottomSheet>(null);
+    const snapPointsFilters = React.useMemo(() => ['1%', '67%'], []);
+    const handleOpenBottomSheetFilters = () => bottomSheetRefFilters.current?.expand()
+    const handleCloseBottomSheetFilters = () => bottomSheetRefFilters.current?.close()
+
     React.useEffect(() => {
         const { CREATE, EDIT, FILTER } = BOTTOM_SHEET_MODE
-        console.log("& React.useEffect ~ bottomSheetMode:", bottomSheetMode)
         switch (bottomSheetMode) {
             case CREATE:
                 handleOpenBottomSheetCreate()
@@ -36,7 +38,7 @@ const BottomSheetControl: React.FC<BottomSheetControlProps> = () => {
                 handleOpenBottomSheetEdit()
                 break;
             case FILTER:
-                //TODO: open filter bottom sheet
+                handleOpenBottomSheetFilters()
                 break;
             default:
                 break;
@@ -66,8 +68,20 @@ const BottomSheetControl: React.FC<BottomSheetControlProps> = () => {
                     onSubmit={(expense: Expense) => dispatch(editExpense(expense))}
                     sheetTitle={'Edit Expense'}
                     buttonText={'Save'}
-                    // isCleanOption={true}
                     onCloseBottomSheet={handleCloseBottomSheetEdit} />
+            </BottomSheetComponent>
+            <BottomSheetComponent
+                bottomSheetRef={bottomSheetRefFilters}
+                snapPoints={snapPointsFilters}
+                onClose={handleCloseBottomSheetFilters}
+                backgroundOpacity={0}>
+                <ExpenseForm
+                    mode={BOTTOM_SHEET_MODE.FILTER}
+                    onSubmit={(expense: Expense) => dispatch(editExpense(expense))}
+                    sheetTitle={'Filters'}
+                    buttonText={'Filter'}
+                    isCleanOption={true}
+                    onCloseBottomSheet={handleCloseBottomSheetFilters} />
             </BottomSheetComponent>
         </React.Fragment>
     );

@@ -12,12 +12,12 @@ describe('userStore reducer', () => {
       fullName: null,
     });
   });
-
-  it('should handle fullName', () => {
-    const actual = userStore(initialState, setFullName('Idan Levi'));
-    expect(actual.fullName).toEqual('Idan Levi');
+  it('should handle fullName value', () => {
+    const fullName = 'Idan Levi'
+    const actual = userStore(initialState, setFullName(fullName));
+    expect(actual.fullName).toEqual(fullName);
   });
-  it('should handle fullName', () => {
+  it('should handle fullName null', () => {
     const actual = userStore(initialState, setFullName(null));
     expect(actual.fullName).toEqual(null);
   });

@@ -1,25 +1,33 @@
 import { BOTTOM_SHEET_MODE } from '../../utils/Constants';
+import { store } from '../store';
 import appStore, {
-  AppStoreState,
   setBottomSheetMode,
 } from './AppStoreSlice';
 
 describe('appStore reducer', () => {
-  const initialState: AppStoreState = {
-    bottomSheetMode: null,
-  };
+
   it('should handle initial state', () => {
     expect(appStore(undefined, { type: 'unknown' })).toEqual({
-      fullName: null,
+      bottomSheetMode: null,
     });
   });
 
-  it('should handle bottomSheetMode mode', () => {
-    const actual = appStore(initialState, setBottomSheetMode(BOTTOM_SHEET_MODE.EDIT));
-    expect(actual.bottomSheetMode).toEqual(BOTTOM_SHEET_MODE.EDIT);
+  it('should set the bottomSheetMode to a specific value', () => {
+    const mode: BOTTOM_SHEET_MODE = BOTTOM_SHEET_MODE.FILTER;
+
+    store.dispatch(setBottomSheetMode(mode));
+
+    const state = store.getState();
+    expect(state.appStore.bottomSheetMode).toEqual(mode);
   });
-  it('should handle bottomSheetMode null', () => {
-    const actual = appStore(initialState, setBottomSheetMode(null));
-    expect(actual.bottomSheetMode).toEqual(null);
+
+  it('should set the bottomSheetMode to null', () => {
+    const mode: BOTTOM_SHEET_MODE = BOTTOM_SHEET_MODE.FILTER;
+
+    store.dispatch(setBottomSheetMode(mode));
+    store.dispatch(setBottomSheetMode(null));
+
+    const state = store.getState();
+    expect(state.appStore.bottomSheetMode).toBeNull();
   });
 });

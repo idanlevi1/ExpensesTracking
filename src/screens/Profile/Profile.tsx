@@ -20,8 +20,7 @@ const Profile: React.FC<ProfileProp> = ({ navigation }) => {
     const handleSignOut = () => {
         dispatch(setFullName(null))
         dispatch(setExpensesList([]))
-        navigation.navigate(SCREEN.WELCOME)
-        navigation.goBack()
+        navigation.replace(SCREEN.WELCOME)
     }
 
     return (

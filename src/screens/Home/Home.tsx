@@ -7,10 +7,8 @@ import { useSelector, useDispatch } from 'react-redux'
 import { COLORS, TEXT_STYLE } from '../../utils/StyleGuide';
 import { RootState } from '../../redux/store';
 import { groupBy } from '../../utils/Tools';
-import { Filters } from '../../assets/svg';
-import { BottomSheetComponent, ExpenseForm } from '../../components';
-import BottomSheet from '@gorhom/bottom-sheet';
-import { editExpense, Expense, setChosenExpense } from '../../redux/ExpensesStore/ExpensesStoreSlice';
+import { FiltersIcon } from '../../assets/svg';
+import { Expense, ExpenseFilters, setChosenExpense } from '../../redux/ExpensesStore/ExpensesStoreSlice';
 import { setBottomSheetMode } from '../../redux/AppStore/AppStoreSlice';
 
 type HomeProp = {
@@ -20,32 +18,33 @@ type HomeProp = {
 const Home: React.FC<HomeProp> = ({ navigation }) => {
 
     const { fullName } = useSelector((state: RootState) => state.userStore);
-    const { expensesList } = useSelector((state: RootState) => state.expensesStore);
+    const { expensesList, expensesFilters } = useSelector((state: RootState) => state.expensesStore);
     const [expensesSections, setExpensesSections] = React.useState([])
 
     const dispatch = useDispatch()
 
-    const bottomSheetRefEdit = React.useRef<BottomSheet>(null);
-    const snapPoints = React.useMemo(() => ['1%', '93%'], []);
-    const handleOpenBottomSheet = () => bottomSheetRefEdit.current?.expand()
-    const handleCloseBottomSheet = () => bottomSheetRefEdit.current?.close()
-
     React.useEffect(() => {
+        const filteredExpenses = expensesList.filter((expense) => {
+            const filter = expensesFilters as ExpenseFilters;
+            return (
+                (!filter.title || expense.title.toLowerCase().includes(filter.title.toLowerCase())) &&
+                (!filter.amount || expense.amount == +filter.amount) &&
+                (!filter.date || expense.date.includes(filter.date))
+            );
+        })
+
         // sort expenses by a descending date 
-        const sortedExpensesList = expensesList.slice().sort((a, b) => new Date(b.date.split('.').reverse().join('-')) - new Date(a.date.split('.').reverse().join('-')))
+        const sortedExpensesList = filteredExpenses.slice().sort((a, b) => new Date(b.date.split('.').reverse().join('-')) - new Date(a.date.split('.').reverse().join('-')))
         // Group expenses by date
         const groupedExpenses = groupBy(sortedExpensesList, 'date')
-        console.log("- USEEEE EFFECTTT groupedExpenses:")
         // Convert the grouped expenses object into an array of expensesSections
         const expensesSections = Object.entries(groupedExpenses).map(([date, data]) => ({
             title: date,
             data,
         }));
         setExpensesSections(expensesSections)
-        console.log("🚀 ~ file: Home.tsx:45 ~ React.useEffect ~ expensesSections:", expensesSections[0])
-    }, [expensesList])
+    }, [expensesList, expensesFilters])
 
-    console.log("________________ HOME expensesList:")
 
     // Render a section header
     const renderSectionHeader = ({ section }) => (
@@ -63,7 +62,6 @@ const Home: React.FC<HomeProp> = ({ navigation }) => {
     );
 
     const handleEditExpense = (expanse: Expense) => {
-        console.log("🚀 ~ file: Home.tsx:50 ~ handleEditExpense ~ expanse:", expanse)
         dispatch(setChosenExpense(expanse))
         dispatch(setBottomSheetMode(BOTTOM_SHEET_MODE.EDIT))
     }
@@ -72,13 +70,17 @@ const Home: React.FC<HomeProp> = ({ navigation }) => {
         return expensesList.reduce((total, expense) => total + expense.amount, 0).toFixed(2);
     }
 
+    const openFiltersSheet = () => {
+        dispatch(setBottomSheetMode(BOTTOM_SHEET_MODE.FILTER))
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.fullName}>{fullName}</Text>
                 <Text style={styles.totalExpenses}>{`Total Expenses: `}<Text style={styles.totalExpensesAmount}>{`$${totalExpenses()}`}</Text></Text>
-                <TouchableOpacity style={styles.filtersButton} onPress={() => { }}>
-                    <Filters />
+                <TouchableOpacity style={styles.filtersButton} onPress={openFiltersSheet}>
+                    <FiltersIcon />
                     <Text style={styles.filtersText}>Filters</Text>
                 </TouchableOpacity>
             </View>
@@ -88,18 +90,6 @@ const Home: React.FC<HomeProp> = ({ navigation }) => {
                 keyExtractor={(item) => item.id}
                 renderSectionHeader={renderSectionHeader}
             />
-            {/* <BottomSheetComponent
-                bottomSheetRef={bottomSheetRefEdit}
-                snapPoints={snapPoints}
-                onClose={handleCloseBottomSheet} >
-                <ExpenseForm
-                    mode={BOTTOM_SHEET_MODE.EDIT}
-                    onSubmit={(expense: Expense) => dispatch(editExpense(expense))}
-                    sheetTitle={'Edit Expense'}
-                    buttonText={'Save'}
-                    // isCleanOption={true}
-                    onCloseBottomSheet={handleCloseBottomSheet} />
-            </BottomSheetComponent> */}
         </View>
     );
 };

@@ -10,6 +10,7 @@ interface BottomSheetComponentProps {
     index: number;
     snapPoints: Array<string | number>;
     children: React.ReactNode;
+    backgroundOpacity?: number;
 }
 
 const BottomSheetComponent: React.FC<BottomSheetComponentProps> = ({
@@ -17,12 +18,13 @@ const BottomSheetComponent: React.FC<BottomSheetComponentProps> = ({
     index = -1,
     snapPoints,
     children,
+    backgroundOpacity= 0.25
 }) => {
     const dispatch = useDispatch()
 
     const renderBackdrop = React.useCallback(
-        (props) => <BottomSheetBackdrop {...props} pressBehavior="close" />,
-        [],
+        (props) => <BottomSheetBackdrop {...props} pressBehavior="close" opacity={backgroundOpacity} />,
+        [backgroundOpacity],
     );
 
     const onChange = (index: number) => {

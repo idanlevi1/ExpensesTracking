@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, ViewStyle, StyleProp, TouchableOpacityProps, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, ViewStyle, StyleProp, StyleSheet } from 'react-native';
 import { COLORS, TEXT_STYLE } from '../../utils/StyleGuide';
 
 interface LongButtonProps {

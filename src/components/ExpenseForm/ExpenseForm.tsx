@@ -3,7 +3,7 @@ import { View, TextInput, Text, TouchableOpacity, StyleSheet, Button } from 'rea
 import { useDispatch, useSelector } from 'react-redux';
 import { LongButton } from '..';
 import { CloseBtn } from '../../assets/svg';
-import { setChosenExpense } from '../../redux/ExpensesStore/ExpensesStoreSlice';
+import { setChosenExpense, setExpensesFilters } from '../../redux/ExpensesStore/ExpensesStoreSlice';
 import { RootState } from '../../redux/store';
 import { BOTTOM_SHEET_MODE } from '../../utils/Constants';
 import { COLORS, TEXT_STYLE } from '../../utils/StyleGuide';
@@ -28,7 +28,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
 }) => {
     const { chosenExpense } = useSelector((state: RootState) => state.expensesStore)
     const [title, setTitle] = useState<string>('');
-    const [amount, setAmount] = useState<number | string>('');
+    const [amount, setAmount] = useState<string>('');
     const [date, setDate] = useState<string>('');
     const [isValidTitle, setIsValidTitle] = useState(true);
     const [isValidAmount, setIsValidAmount] = useState(true);
@@ -46,52 +46,63 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
 
     const handleSubmitExpenseForm = () => {
-        if (title.length && amount.toString().length && date.length && isValidTitle && isValidAmount && isValidDate) {
-            const newExpense = {
-                id: chosenExpense?.id || generateRandomId(),
-                title,
-                amount: +amount,
-                date,
-            };
-            onSubmit(newExpense)
-            onCloseBottomSheet();
-            resetForm()
-            chosenExpense?.id && dispatch(setChosenExpense(null))
-        } else {
-            validateTitle(title)
-            validateAmount(amount)
-            validateDate(date)
+        switch (mode) {
+            case BOTTOM_SHEET_MODE.CREATE:
+            case BOTTOM_SHEET_MODE.EDIT:
+                if (title.length && amount.toString().length && date.length && isValidTitle && isValidAmount && isValidDate) {
+                    const newExpense = {
+                        id: chosenExpense?.id || generateRandomId(),
+                        title,
+                        amount: +amount,
+                        date,
+                    };
+                    onSubmit(newExpense)
+                    onCloseBottomSheet();
+                    resetForm()
+                    chosenExpense?.id && dispatch(setChosenExpense(null))
+                } else {
+                    validateTitle(title)
+                    validateAmount(amount)
+                    validateDate(date)
+                }
+                break;
+            case BOTTOM_SHEET_MODE.FILTER:
+                dispatch(setExpensesFilters({ title, amount: amount.toString(), date }))
+                onCloseBottomSheet();
+            default:
+                break;
         }
+
     };
 
-    const validateTitle = (title) => {
+    const validateTitle = (title: string) => {
         const titleIsValid = title.trim() !== '';
         setIsValidTitle(titleIsValid);
     }
 
-    const validateAmount = (amount) => {
+    const validateAmount = (amount: string) => {
         const amountIsValid = !isNaN(parseFloat(amount)) && parseFloat(amount) > 0;
         setIsValidAmount(amountIsValid);
     }
 
-    const validateDate = (date) => {
+    const validateDate = (date: string) => {
         const dateRegex = /^(\d{2})\.(\d{2})\.(\d{4})$/;
         const dateIsValid = dateRegex.test(date);
         setIsValidDate(dateIsValid);
     }
 
-    const onChangeTitle = (title) => {
-        validateTitle(title)
+    const onChangeTitle = (title: string) => {
+        mode != BOTTOM_SHEET_MODE.FILTER && validateTitle(title)
         setTitle(title)
     }
 
-    const onChangeAmount = (amount) => {
-        validateAmount(amount)
+    const onChangeAmount = (amount: string) => {
+        mode != BOTTOM_SHEET_MODE.FILTER && validateAmount(amount)
         setAmount(amount)
     }
 
-    const onChangeDate = (date) => {
-        validateDate(date)
+    const onChangeDate = (date: string) => {
+        mode != BOTTOM_SHEET_MODE.FILTER && validateDate(date)
         setDate(date)
     }
 
@@ -99,11 +110,13 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
         setTitle('');
         setAmount('');
         setDate('');
+        setIsValidTitle(true)
+        setIsValidAmount(true)
+        setIsValidDate(true)
     }
 
     return (
         <View style={styles.container}>
-            {/* <View style={styles.topButtons}> */}
             <TouchableOpacity style={styles.closeButton} onPress={onCloseBottomSheet}>
                 <CloseBtn onPress={onCloseBottomSheet} />
             </TouchableOpacity>
@@ -156,9 +169,6 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingTop: 50,
         paddingHorizontal: 32,
-    },
-    topButtons: {
-
     },
     clearButton: {
         position: 'absolute',

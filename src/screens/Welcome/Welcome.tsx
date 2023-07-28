@@ -19,7 +19,7 @@ const Welcome: React.FC<WelcomeProp> = ({ navigation }) => {
     const handleButtonPress = () => {
         if (name.trim() !== '') {
             dispatch(setFullName(name))
-            navigation.navigate(SCREEN.HOME)
+            navigation.replace(SCREEN.HOME)
             setName('') //reset field
         }
     };
