@@ -12,10 +12,12 @@ export type Expense = {
 
 export interface ExpensesStoreState {
   expensesList: Array<Expense>,
+  chosenExpense: Expense | null,
 }
 
 const initialState: ExpensesStoreState = {
   expensesList: [],
+  chosenExpense: null,
 };
 
 export const expensesStoreSlice = createSlice({
@@ -26,19 +28,25 @@ export const expensesStoreSlice = createSlice({
       state.expensesList = action.payload;
     },
     addExpense: (state, action: PayloadAction<Expense>) => {
-      console.log("🚀 ~ file: ExpensesStoreSlice.ts:29 ~ action:", action)
       state.expensesList.push(action.payload);
     },
     editExpense: (state, action: PayloadAction<Expense>) => {
       const { id, title, amount, date } = action.payload;
+      console.log("🚀 ~ file: ___________.ts:35 ~  action.payload:",  action.payload)
       const index = state.expensesList.findIndex((expense) => expense.id === id);
+      console.log("🚀 ~ file: ExpensesStoreSlice.ts:37 ~ index:", index)
       if (index !== -1) {
         state.expensesList[index] = { ...state.expensesList[index], title, amount, date };
+        console.log("🚀 ~ file: _S_S_S_.ts:38 ~ state.expensesList:", state.expensesList)
+        console.log("🚀 ~ file: ___________.ts:39 ~ state.expensesList[index]:", state.expensesList[index])
       }
     },
     deleteExpense: (state, action: PayloadAction<string>) => {
       const id = action.payload;
       state.expensesList = state.expensesList.filter((expense) => expense.id !== id);
+    },
+    setChosenExpense: (state, action: PayloadAction<Expense>) => {
+      state.chosenExpense = action.payload;
     },
     // setFilterBy: (state, action) => {
     //   state.filterBy = action.payload;
@@ -52,7 +60,7 @@ export const expensesStoreSlice = createSlice({
   // },
 });
 
-export const {setExpensesList ,addExpense, editExpense, deleteExpense, } = expensesStoreSlice.actions;
+export const { setChosenExpense, setExpensesList, addExpense, editExpense, deleteExpense, } = expensesStoreSlice.actions;
 
 export const selectNavigationStore = (state: RootState) => state.expensesStore;
 

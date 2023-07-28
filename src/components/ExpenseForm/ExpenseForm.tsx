@@ -1,43 +1,62 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, StyleSheet, Button } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import { LongButton } from '..';
 import { CloseBtn } from '../../assets/svg';
+import { setChosenExpense } from '../../redux/ExpensesStore/ExpensesStoreSlice';
+import { RootState } from '../../redux/store';
+import { BOTTOM_SHEET_MODE } from '../../utils/Constants';
 import { COLORS, TEXT_STYLE } from '../../utils/StyleGuide';
 import { generateRandomId } from '../../utils/Tools';
 
 interface ExpenseFormProps {
+    mode: BOTTOM_SHEET_MODE,
     onCloseBottomSheet: Function;
     sheetTitle: string;
     buttonText: string;
-    isCleanOption: boolean;
+    isCleanOption?: boolean;
     onSubmit: Function;
 }
 
 const ExpenseForm: React.FC<ExpenseFormProps> = ({
+    mode,
     onCloseBottomSheet,
     sheetTitle,
     buttonText,
     isCleanOption = false,
     onSubmit,
 }) => {
-    const [title, setTitle] = useState('');
-    const [amount, setAmount] = useState('');
-    const [date, setDate] = useState('');
+    const { chosenExpense } = useSelector((state: RootState) => state.expensesStore)
+    const [title, setTitle] = useState<string>('');
+    const [amount, setAmount] = useState<number | string>('');
+    const [date, setDate] = useState<string>('');
     const [isValidTitle, setIsValidTitle] = useState(true);
     const [isValidAmount, setIsValidAmount] = useState(true);
     const [isValidDate, setIsValidDate] = useState(true);
 
-    const handleCreateExpense = () => {
-        if (title.length && amount.length && date.length && isValidTitle && isValidAmount && isValidDate) {
+    const dispatch = useDispatch()
+
+    React.useEffect(() => {
+        if (mode == BOTTOM_SHEET_MODE.EDIT && chosenExpense) {
+            setTitle(chosenExpense.title)
+            setAmount(chosenExpense.amount.toString())
+            setDate(chosenExpense.date)
+        }
+    }, [chosenExpense])
+
+
+    const handleSubmitExpenseForm = () => {
+        if (title.length && amount.toString().length && date.length && isValidTitle && isValidAmount && isValidDate) {
             const newExpense = {
-                id: generateRandomId(),
+                id: chosenExpense?.id || generateRandomId(),
                 title,
-                amount: parseFloat(amount),
+                amount: +amount,
                 date,
             };
             onSubmit(newExpense)
             onCloseBottomSheet();
             resetForm()
+            chosenExpense?.id && dispatch(setChosenExpense(null))
         } else {
             validateTitle(title)
             validateAmount(amount)
@@ -126,7 +145,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
                 {!isValidDate && <Text style={styles.errorText}>Date must be in the format DD.MM.YYYY</Text>}
             </View>
             <View style={styles.buttonContainer}>
-                <LongButton text={buttonText} onPress={handleCreateExpense} />
+                <LongButton text={buttonText} onPress={handleSubmitExpenseForm} />
             </View>
         </View>
     );

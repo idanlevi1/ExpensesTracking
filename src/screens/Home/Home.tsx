@@ -1,13 +1,17 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, SectionList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SectionList } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MainStackParamList } from '../../navigation/MainStackNavigator';
-import { SCREEN } from '../../utils/Constants';
-import { useSelector } from 'react-redux'
+import { BOTTOM_SHEET_MODE, SCREEN } from '../../utils/Constants';
+import { useSelector, useDispatch } from 'react-redux'
 import { COLORS, TEXT_STYLE } from '../../utils/StyleGuide';
 import { RootState } from '../../redux/store';
 import { groupBy } from '../../utils/Tools';
 import { Filters } from '../../assets/svg';
+import { BottomSheetComponent, ExpenseForm } from '../../components';
+import BottomSheet from '@gorhom/bottom-sheet';
+import { editExpense, Expense, setChosenExpense } from '../../redux/ExpensesStore/ExpensesStoreSlice';
+import { setBottomSheetMode } from '../../redux/AppStore/AppStoreSlice';
 
 type HomeProp = {
     navigation: NativeStackNavigationProp<MainStackParamList, SCREEN.HOME>;
@@ -17,7 +21,31 @@ const Home: React.FC<HomeProp> = ({ navigation }) => {
 
     const { fullName } = useSelector((state: RootState) => state.userStore);
     const { expensesList } = useSelector((state: RootState) => state.expensesStore);
-    console.log("🚀 ~ ________________: Home.tsx:30 ~ expensesList:", expensesList)
+    const [expensesSections, setExpensesSections] = React.useState([])
+
+    const dispatch = useDispatch()
+
+    const bottomSheetRefEdit = React.useRef<BottomSheet>(null);
+    const snapPoints = React.useMemo(() => ['1%', '93%'], []);
+    const handleOpenBottomSheet = () => bottomSheetRefEdit.current?.expand()
+    const handleCloseBottomSheet = () => bottomSheetRefEdit.current?.close()
+
+    React.useEffect(() => {
+        // sort expenses by a descending date 
+        const sortedExpensesList = expensesList.slice().sort((a, b) => new Date(b.date.split('.').reverse().join('-')) - new Date(a.date.split('.').reverse().join('-')))
+        // Group expenses by date
+        const groupedExpenses = groupBy(sortedExpensesList, 'date')
+        console.log("- USEEEE EFFECTTT groupedExpenses:")
+        // Convert the grouped expenses object into an array of expensesSections
+        const expensesSections = Object.entries(groupedExpenses).map(([date, data]) => ({
+            title: date,
+            data,
+        }));
+        setExpensesSections(expensesSections)
+        console.log("🚀 ~ file: Home.tsx:45 ~ React.useEffect ~ expensesSections:", expensesSections[0])
+    }, [expensesList])
+
+    console.log("________________ HOME expensesList:")
 
     // Render a section header
     const renderSectionHeader = ({ section }) => (
@@ -28,42 +56,50 @@ const Home: React.FC<HomeProp> = ({ navigation }) => {
 
     // Render an expense item
     const renderExpenseItem = ({ item }) => (
-        <View style={styles.expenseItem}>
+        <TouchableOpacity onPress={() => handleEditExpense(item)} style={styles.expenseItem}>
             <Text style={styles.sectionItemText}>{item.title}</Text>
             <Text style={styles.sectionItemAmount}>{`$${item.amount.toFixed(2)}`}</Text>
-        </View>
+        </TouchableOpacity>
     );
+
+    const handleEditExpense = (expanse: Expense) => {
+        console.log("🚀 ~ file: Home.tsx:50 ~ handleEditExpense ~ expanse:", expanse)
+        dispatch(setChosenExpense(expanse))
+        dispatch(setBottomSheetMode(BOTTOM_SHEET_MODE.EDIT))
+    }
 
     const totalExpenses = (): string => {
         return expensesList.reduce((total, expense) => total + expense.amount, 0).toFixed(2);
     }
-
-    // Group expenses by date
-    const groupedExpenses = groupBy(expensesList, 'date')
-
-    // Convert the grouped expenses object into an array of sections
-    const sections = Object.entries(groupedExpenses).map(([date, data]) => ({
-        title: date,
-        data,
-    }));
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.fullName}>{fullName}</Text>
                 <Text style={styles.totalExpenses}>{`Total Expenses: `}<Text style={styles.totalExpensesAmount}>{`$${totalExpenses()}`}</Text></Text>
-                <TouchableOpacity style={styles.filtersButton}>
+                <TouchableOpacity style={styles.filtersButton} onPress={() => { }}>
                     <Filters />
                     <Text style={styles.filtersText}>Filters</Text>
                 </TouchableOpacity>
             </View>
             <SectionList
-                sections={sections}
+                sections={expensesSections}
                 renderItem={renderExpenseItem}
                 keyExtractor={(item) => item.id}
                 renderSectionHeader={renderSectionHeader}
-                // SectionSeparatorComponent={() => <View style={styles.sectionSeparator} />} // Separator between date sections
             />
+            {/* <BottomSheetComponent
+                bottomSheetRef={bottomSheetRefEdit}
+                snapPoints={snapPoints}
+                onClose={handleCloseBottomSheet} >
+                <ExpenseForm
+                    mode={BOTTOM_SHEET_MODE.EDIT}
+                    onSubmit={(expense: Expense) => dispatch(editExpense(expense))}
+                    sheetTitle={'Edit Expense'}
+                    buttonText={'Save'}
+                    // isCleanOption={true}
+                    onCloseBottomSheet={handleCloseBottomSheet} />
+            </BottomSheetComponent> */}
         </View>
     );
 };

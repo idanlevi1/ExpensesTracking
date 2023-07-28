@@ -1,6 +1,7 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import expensesStoreReducer from './ExpensesStore/ExpensesStoreSlice';
 import userStoreReducer from './UserStore/UserStoreSlice';
+import appStoreReducer from './AppStore/AppStoreSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   persistReducer,
@@ -17,7 +18,7 @@ const persistConfig = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
-  blacklist: ['expensesStore', 'UserStore'],
+  blacklist: ['expensesStore', 'userStore', 'appStore'],
 }
 
 const expensesStorePersistConfig = {
@@ -34,10 +35,18 @@ const userStorePersistConfig = {
   whitelist: ['fullName'],
 }
 
+const appStorePersistConfig = {
+  key: 'appStore',
+  version: 1,
+  storage: AsyncStorage,
+  whitelist: [],
+}
+
 
 const reducer = combineReducers({
   expensesStore: persistReducer(expensesStorePersistConfig, expensesStoreReducer),
   userStore: persistReducer(userStorePersistConfig, userStoreReducer),
+  appStore: persistReducer(appStorePersistConfig, appStoreReducer),
 })
 
 const persistedReducer = persistReducer(persistConfig, reducer);

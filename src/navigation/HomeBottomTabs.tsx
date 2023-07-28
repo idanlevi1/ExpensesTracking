@@ -1,14 +1,13 @@
 import React from "react";
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import { Home, Profile } from "../screens";
-import { SCREEN, TAB } from "../utils/Constants";
+import { BOTTOM_SHEET_MODE, SCREEN, TAB } from "../utils/Constants";
 import { COLORS, TEXT_STYLE } from "../utils/StyleGuide";
 import { PlusButton } from "../assets/svg";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import BottomSheet from '@gorhom/bottom-sheet';
-import { BottomSheetComponent, ExpenseForm } from "../components";
+import { BottomSheetControl } from "../components";
 import { useDispatch } from 'react-redux'
-import { addExpense, Expense } from "../redux/ExpensesStore/ExpensesStoreSlice";
+import { setBottomSheetMode } from "../redux/AppStore/AppStoreSlice";
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -23,11 +22,6 @@ const Tab = createBottomTabNavigator<HomeBottomTabsParamList>();
 const HomeBottomTabs = () => {
 
     const dispatch = useDispatch()
-
-    const bottomSheetRef = React.useRef<BottomSheet>(null);
-    const snapPoints = React.useMemo(() => ['1%', '93%'], []);
-    const handleOpenBottomSheet = () => bottomSheetRef.current?.expand()
-    const handleCloseBottomSheet = () => bottomSheetRef.current?.close()
 
     const tabOptions = {
         tabBarIcon: () => null,
@@ -56,17 +50,8 @@ const HomeBottomTabs = () => {
                         ...tabOptions
                     })} />
             </Tab.Navigator>
-            <PlusButton onPress={handleOpenBottomSheet} style={{ position: 'absolute', bottom: (87 / 2), left: screenWidth / 2 - (56 / 2) }} />
-            <BottomSheetComponent
-                bottomSheetRef={bottomSheetRef}
-                snapPoints={snapPoints}
-                onClose={handleCloseBottomSheet} >
-                <ExpenseForm
-                    onSubmit={(expense: Expense) => dispatch(addExpense(expense))}
-                    sheetTitle={'Create Expense'}
-                    buttonText={'Create'}
-                    onCloseBottomSheet={handleCloseBottomSheet} />
-            </BottomSheetComponent>
+            <PlusButton onPress={() => dispatch(setBottomSheetMode(BOTTOM_SHEET_MODE.CREATE))} style={{ position: 'absolute', bottom: (87 / 2), left: screenWidth / 2 - (56 / 2) }} />
+            <BottomSheetControl />
         </React.Fragment>
     );
 };
