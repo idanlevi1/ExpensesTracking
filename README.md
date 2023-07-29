@@ -18,13 +18,13 @@ The Expenses Tracking App is a mobile application built with React Native and Ty
 - Group expenses by date for better organization
 
  ## Technologies Used
-- React Native (0.72.3)
+- React Native (0.72.3v)
 - TypeScript
 - Redux
 - Redux Toolkit
-- React Navigation
+- redux-persist
+- React Navigation (6v)
 - @gorhom/bottom-sheet
-- @react-native-async-storage/async-storage
 - Jest
 
 
@@ -32,7 +32,7 @@ The Expenses Tracking App is a mobile application built with React Native and Ty
 
 ## Installation and Usage
 
-1. Clone the repository:
+Clone the repository:
 
 ```bash
 git clone https://github.com/idanlevi1/ExpensesTracking.git
@@ -44,15 +44,14 @@ Install dependencies:
 ```bash
 yarn install
 ```
+Run the app on iPhone:
+```bash
+yarn ios
+```
 
 Run the app on Android:
 ```bash
 yarn android
-```
-
-Run the app on iPhone:
-```bash
-yarn ios
 ```
 
 To run the tests:
